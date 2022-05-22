@@ -1,39 +1,34 @@
 import PropTypes from 'prop-types';
 
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Modal, Button, Space, Avatar, Input, List, Skeleton } from 'antd';
+import { Table, Tag, Modal, Button, Space, Avatar, Input, message, List, Comment } from 'antd';
 import moment from 'moment';
 const { TextArea } = Input;
+
+const defaultExpandable = {
+  expandedRowRender: (record) => <p>{record.description}</p>,
+};
 
 const ApplyList = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [data, setData] = useState([]);
-
+  const [expandable, setExpandable] = useState(defaultExpandable);
   const columns = [
     {
-      title: 'Task',
+      title: 'Account ID',
       dataIndex: 'name',
       key: 'name',
       render: (text) => <a>{text}</a>,
     },
 
-    {
-      title: 'Deadline',
-      dataIndex: 'deadline',
-      key: 'deadline',
-    },
-    {
-      title: 'Payment',
-      dataIndex: 'payment',
-      key: 'payment',
-    },
+
     {
       title: 'Action',
       key: 'action',
       render: (text, record) => (
         <Space size="middle">
-          <a>Apply</a>
+          <Button>Accept</Button>
         </Space>
       ),
     },
@@ -41,15 +36,36 @@ const ApplyList = () => {
   useEffect(() => {
     setData([
       {
-        name: 'near',
+        name: 'test.near',
         commentList: ['aaaa', 'goood'],
+        description: (
+          <p>
+            {['good', 'not bad'].map((item ,index)=> (<>Comment {index+1}: {item} <br /></>))}
+          </p>
+        ),
       },
       {
-        name: 'near1',
-        commentList: ['aaaa', 'goood'],
+        name: 'test1.near',
+        commentList: ['good', 'not bad'],
+        // description: 'My name is John Brown,\n I am',
+        description: (
+          <p>
+          {['good', 'well done'].map((item ,index)=> (<>Comment {index+1}: {item} <br /></>))}
+          </p>
+        ),
       },
     ]);
   }, []);
+
+  const getDiv = (list) => {
+    let div = <></>;
+    for (let i = 0; i < list.length; i++) {
+      const element = list[i];
+      div += <p>Comment {i + 1}:{element}</p>
+
+    }
+    return <p>Comment 1</p>
+  }
 
   const handleAdd = () => {
     setData([]);
@@ -81,20 +97,39 @@ const ApplyList = () => {
 
   return (
     <>
-      <List
+      {/* <List
         className="demo-loadmore-list"
         itemLayout="horizontal"
         dataSource={data}
+        // renderItem={(item) => (
+        //   <List.Item actions={[<a key="list-loadmore-edit" onClick={()=>{message.info('call contract')}}>Accept</a>]}>
+        //     <List.Item.Meta
+        //       avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+        //       title={<a >{item.name}</a>}
+        //       description="Avg point:4.5"
+        //     />
+           
+        //      {getDiv(item.commentList)}
+        //   </List.Item>
+        // )}
         renderItem={(item) => (
-          <List.Item actions={[<a key="list-loadmore-edit">Accept</a>]}>
-            <List.Item.Meta
-              avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-              title={<a >{item.name}</a>}
-              description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+          <li>
+            <Comment
+              actions={[<span key="comment-list-reply-to-0" onClick={()=>{message.info('aa')}}>Reply to</span>]}
+              author={item.name}
+              content={item.content}
+            
             />
-             {item.commentList.map(item=>(`${item}\r\n`))}
-          </List.Item>
+          </li>
         )}
+      /> */}
+
+      <Table
+        expandable={expandable}
+        pagination={false}
+        columns={columns}
+        dataSource={data}
+      // scroll={scroll}
       />
     </>
   );
