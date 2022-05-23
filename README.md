@@ -116,6 +116,3 @@ As you can see in `package.json`, this does two things:
   [create-near-app]: https://github.com/near/create-near-app
   [gh-pages]: https://github.com/tschaub/gh-pages
 
-
-https://github.com/fastify/fast-proxy
-https://github.com/chimurai/http-proxy-middleware 直接用这个 配一下就行了

@@ -11,11 +11,11 @@ import {
 import moment from 'moment'
 const { TextArea } = Input;
 
-// export default function Messages({ messages }) {
+// export default function Messages({ tasks }) {
 //   return (
 //     <>
 //       <h2>Messages</h2>
-//       {messages.map((message, i) =>
+//       {tasks.map((message, i) =>
 //         // TODO: format as cards, add timestamp
 //         <p key={i} className={message.premium ? 'is-premium' : ''}>
 //           <strong>{message.sender}</strong>:<br/>
@@ -27,7 +27,7 @@ const { TextArea } = Input;
 // }
 
 // Messages.propTypes = {
-//   messages: PropTypes.array
+//   tasks: PropTypes.array
 // };
 
 const Rating = () => {

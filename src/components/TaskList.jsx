@@ -17,16 +17,15 @@ const { TextArea } = Input;
 
 
 
-const TaskList = () => {
+const TaskList = ({ onSubmit,tasks, currentUser }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [data, setData] = useState([]);
-
   const columns = [
     {
       title: 'Task',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'task',
+      key: 'task',
       render: (text) => <a>{text}</a>,
     },
 
@@ -54,19 +53,19 @@ const TaskList = () => {
     setData([
       {
         key: '1',
-        name: '翻译文章',
+        task: '翻译文章',
         deadline: '2022-05-21',
         payment: 100011,
       },
       {
         key: '2',
-        name: '室内清洁',
+        task: '室内清洁',
         deadline: '2022-05-21',
         payment: 10001,
       },
       {
         key: '3',
-        name: 'Joe Black',
+        task: 'Joe Black',
         deadline: '2022-05-21',
         payment: 1000,
       },
@@ -90,24 +89,25 @@ const TaskList = () => {
   };
 
   const onFinish = (values) => {
-    setData([{...values,key:values.name,deadline:moment(values.deadline).format('YYYY-MM-DD')}, ...data]);
+    const item = {...values,key:values.name,deadline:moment(values.deadline).format('YYYY-MM-DD')};
+    setData([item, ...data]);
+    onSubmit(item);
     handleCancel(false);
   };
 
   const onFinishFailed = () => {
     console.log('onFinishFailed:');
   };
-
   return (
     <>
       <div>
         <Button onClick={showModal} type="primary" style={{ marginBottom: 16 }}>
-          Add a Task
+          Add Task
         </Button>
-        <Table columns={columns} pagination={false} dataSource={data} />
+        <Table columns={columns} pagination={false} dataSource={tasks} />
       </div>
       <Modal
-        title="Basic Modal"
+        title=" Add Task"
         footer={false}
         visible={isModalVisible}
         onOk={handleOk}
@@ -124,7 +124,7 @@ const TaskList = () => {
         >
           <Form.Item
             label="Task"
-            name="name"
+            name="task"
             rules={[{ required: true, message: 'Please input your Task!' }]}
           >
             <TextArea rows={4} placeholder="Please input your Task" maxLength={6} />

@@ -43,9 +43,9 @@ The "Open Browser" option will open a new tab in your browser. Either option wil
 
 Once you've opened the web app in your browser, log in and experiment with the simple "Decentralized Service Transaction Platform" smart contract.
 
-The "Save" button sends the text input to the blockchain, storing it as a string. The web app will reload with the new Decentralized Service Transaction Platform messages automatically.
+The "Save" button sends the text input to the blockchain, storing it as a string. The web app will reload with the new Decentralized Service Transaction Platform tasks automatically.
 
-The "Save & Donate" button demonstrates attaching NEAR and a gas price when calling the smart contract's method `addMessage`. When the web app refreshes with "paid" messages, the user interface highlights them.
+The "Save & Donate" button demonstrates attaching NEAR and a gas price when calling the smart contract's method `addTask`. When the web app refreshes with "paid" tasks, the user interface highlights them.
 
 Data collection
 ===============

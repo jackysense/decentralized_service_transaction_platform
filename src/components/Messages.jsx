@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export default function Messages({ messages }) {
+export default function Messages({ tasks }) {
   return (
     <>
       <h2>Messages</h2>
-      {messages.map((message, i) =>
+      {tasks.map((message, i) =>
         // TODO: format as cards, add timestamp
         <p key={i} className={message.premium ? 'is-premium' : ''}>
           <strong>{message.sender}</strong>:<br/>
@@ -17,5 +17,5 @@ export default function Messages({ messages }) {
 }
 
 Messages.propTypes = {
-  messages: PropTypes.array
+  tasks: PropTypes.array
 };

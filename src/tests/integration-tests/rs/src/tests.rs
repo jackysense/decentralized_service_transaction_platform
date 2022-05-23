@@ -32,13 +32,13 @@ async fn test_message(
     worker: &Worker<Sandbox>,
 ) -> anyhow::Result<()> {
     user
-    .call(&worker, contract.id(), "addMessage")
+    .call(&worker, contract.id(), "addTask")
     .args_json(json!({"text": "aloha"}))?
     .transact()
     .await?;
 
     let result: serde_json::Value = user
-        .call(&worker, contract.id(), "getMessages")
+        .call(&worker, contract.id(), "getMessageTasks")
         .args_json(json!({}))?
         .transact()
         .await?
@@ -64,13 +64,13 @@ async fn test_messages(
     worker: &Worker<Sandbox>,
 ) -> anyhow::Result<()> {
     user
-        .call(&worker, contract.id(), "addMessage")
+        .call(&worker, contract.id(), "addTask")
         .args_json(json!({"text": "hola"}))?
         .transact()
         .await?;
 
     let result: serde_json::Value = user
-        .call(&worker, contract.id(), "getMessages")
+        .call(&worker, contract.id(), "getMessageTasks")
         .args_json(json!({}))?
         .transact()
         .await?
@@ -90,6 +90,6 @@ async fn test_messages(
     );    
 
     assert_eq!(result, expected);
-    println!("      Passed ✅ send two messages and expect two total");
+    println!("      Passed ✅ send two tasks and expect two total");
     Ok(())
 }

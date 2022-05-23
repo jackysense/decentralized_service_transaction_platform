@@ -127,14 +127,24 @@ button {
   padding: 24px;
   background: #fff;
 }
-#components-layout-demo-top .logo {
+ .logo {
   float: left;
-  width: 120px;
+  width: 200px;
   height: 31px;
-  margin: 16px 24px 16px 0;
-  background: rgba(255, 255, 255, 0.3);
+  color: #eee;
+  font-size: 18px;
+  font-weight: bold;
+}
+.right {
+  float: right;
+  // width: 100px;
+  height: 31px;
+  color: #eee;
+  font-size: 18px;
+  font-weight: bold;
 }
 .ant-row-rtl #components-layout-demo-top .logo {
   float: right;
   margin: 16px 0 16px 24px;
 }
+
