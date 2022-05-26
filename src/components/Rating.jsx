@@ -1,34 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import {
- 
+import { 
   Button,
   Form,
   Input,
   Rate,
-  message
 } from 'antd';
-import moment from 'moment'
 const { TextArea } = Input;
 
-// export default function Messages({ tasks }) {
-//   return (
-//     <>
-//       <h2>Messages</h2>
-//       {tasks.map((message, i) =>
-//         // TODO: format as cards, add timestamp
-//         <p key={i} className={message.premium ? 'is-premium' : ''}>
-//           <strong>{message.sender}</strong>:<br/>
-//           {message.text}
-//         </p>
-//       )}
-//     </>
-//   );
-// }
-
-// Messages.propTypes = {
-//   tasks: PropTypes.array
-// };
 
 const Rating = ({receiver,onPay}) => {
 
@@ -36,34 +15,10 @@ const Rating = ({receiver,onPay}) => {
 
 
   useEffect(() => {
-    // setData([
-    //   {
-    //     key: '1',
-    //     name: '翻译文章',
-    //     deadline: '2022-05-21',
-    //     payment: 100011,
-    //   },
-    //   {
-    //     key: '2',
-    //     name: '室内清洁',
-    //     deadline: '2022-05-21',
-    //     payment: 10001,
-    //   },
-    //   {
-    //     key: '3',
-    //     name: 'Joe Black',
-    //     deadline: '2022-05-21',
-    //     payment: 1000,
-    //   },
-    // ]);
+    
   }, []);
 
 
-
-  const onFinish = (values) => {
-    message.info(JSON.stringify(values))
-    // setData([{...values,key:values.name,deadline:moment(values.deadline).format('YYYY-MM-DD')}, ...data]);
-  };
 
   const onFinishFailed = () => {
     console.log('onFinishFailed:');
@@ -77,7 +32,7 @@ const Rating = ({receiver,onPay}) => {
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           initialValues={{ remember: true }}
-          onFinish={onFinish}
+          onFinish={onPay}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >

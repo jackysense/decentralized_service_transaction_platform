@@ -21,40 +21,25 @@ const ApplyList = ({applicants,onAccept}) => {
       key: 'name',
       render: (text) => <a>{text}</a>,
     },
+    {
+      title: 'Task',
+      dataIndex: 'task',
+      key: 'task',
+    },
 
 
     {
       title: 'Action',
       key: 'action',
       render: (text, record,index) => (
-        <Space size="middle">
-          <Button onClick={()=>onAccept(record.name)}>Accept</Button>
-        </Space>
+        // <Space size="middle">
+          <Button onClick={()=>onAccept(record.name,record.index)}>Accept</Button>
+        // </Space>
       ),
     },
   ];
   useEffect(() => {
-    // setExpandKeys([1,2]);
-    // setData([
-    //   {
-    //     key:1,
-    //     name: 'test.near',
-    //     description: (
-    //       <p>
-    //         {['good', 'not bad'].map((item ,index)=> (<>Comment {index+1}: {item} <br /></>))}
-    //       </p>
-    //     ),
-    //   },
-    //   {
-    //     key:2,
-    //     name: 'test1.near',
-    //     description: (
-    //       <p>
-    //       {['good', 'well done'].map((item ,index)=> (<>Comment {index+1}: {item} <br /></>))}
-    //       </p>
-    //     ),
-    //   },
-    // ]);
+    
   }, []);
 
   const expandKeys=applicants.map(item=>item.key);

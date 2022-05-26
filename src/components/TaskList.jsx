@@ -13,6 +13,7 @@ import {
   InputNumber,
 } from 'antd';
 import moment from 'moment'
+import { number } from 'prop-types';
 const { TextArea } = Input;
 
 
@@ -41,6 +42,9 @@ const TaskList = ({ onAddTask,onApply,tasks, currentUser }) => {
       title: 'Deadline',
       dataIndex: 'deadline',
       key: 'deadline',
+      render:(text)=>{
+        return moment(parseInt(text) ).format('YYYY-MM-DD');
+      }
     },
     {
       title: 'Payment(Ⓝ)',
@@ -63,34 +67,14 @@ const TaskList = ({ onAddTask,onApply,tasks, currentUser }) => {
       title: 'Action',
       key: 'action',
       render: (text, record,index) => (
-        <Space size="middle">
-          <a onClick={()=>onApply(index)}>Apply</a>
-        </Space>
+        <>
+          {!record.finalApplicant?<a onClick={()=>onApply(index)}>Apply</a>:''}  
+        </>
       ),
     },
   ];
   useEffect(() => {
-    // setData([
-    //   {
-    //     key: '1',
-    //     task: '翻译文章',
-    //     deadline: '2022-05-21',
-    //     payment: 100011,
-    //   },
-    //   {
-    //     key: '2',
-    //     task: '室内清洁',
-    //     deadline: '2022-05-21',
-    //     payment: 10001,
-    //   },
-    //   {
-    //     key: '3',
-    //     task: 'Joe Black',
-    //     deadline: '2022-05-21',
-    //     payment: 1000,
-    //   },
-    // ]);
-  
+      
   }, []);
 
   const handleAdd = () => {
