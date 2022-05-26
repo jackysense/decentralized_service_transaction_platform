@@ -17,9 +17,10 @@ const { TextArea } = Input;
 
 
 
-const TaskList = ({ onSubmit,tasks, currentUser }) => {
+const TaskList = ({ onAddTask,onApply,tasks, currentUser }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  
   const [data, setData] = useState([]);
   const columns = [
     {
@@ -30,46 +31,66 @@ const TaskList = ({ onSubmit,tasks, currentUser }) => {
     },
 
     {
+      title: 'Publisher',
+      dataIndex: 'sender',
+      key: 'sender',
+    },
+    
+
+    {
       title: 'Deadline',
       dataIndex: 'deadline',
       key: 'deadline',
     },
     {
-      title: 'Payment',
-      dataIndex: 'payment',
-      key: 'payment',
+      title: 'Payment(Ⓝ)',
+      dataIndex: 'balance',
+      key: 'balance',
+      render:(text)=>{
+        return text/10**24;
+      }
     },
+    {
+      title: 'Applicants',
+      dataIndex: 'applicants',
+      key: 'applicants',
+      render:(text)=>{
+        return text.length;
+      }
+    },
+    
     {
       title: 'Action',
       key: 'action',
-      render: (text, record) => (
+      render: (text, record,index) => (
         <Space size="middle">
-          <a>Apply</a>
+          <a onClick={()=>onApply(index)}>Apply</a>
         </Space>
       ),
     },
   ];
   useEffect(() => {
-    setData([
-      {
-        key: '1',
-        task: '翻译文章',
-        deadline: '2022-05-21',
-        payment: 100011,
-      },
-      {
-        key: '2',
-        task: '室内清洁',
-        deadline: '2022-05-21',
-        payment: 10001,
-      },
-      {
-        key: '3',
-        task: 'Joe Black',
-        deadline: '2022-05-21',
-        payment: 1000,
-      },
-    ]);
+    // setData([
+    //   {
+    //     key: '1',
+    //     task: '翻译文章',
+    //     deadline: '2022-05-21',
+    //     payment: 100011,
+    //   },
+    //   {
+    //     key: '2',
+    //     task: '室内清洁',
+    //     deadline: '2022-05-21',
+    //     payment: 10001,
+    //   },
+    //   {
+    //     key: '3',
+    //     task: 'Joe Black',
+    //     deadline: '2022-05-21',
+    //     payment: 1000,
+    //   },
+    // ]);
+  
   }, []);
 
   const handleAdd = () => {
@@ -78,6 +99,7 @@ const TaskList = ({ onSubmit,tasks, currentUser }) => {
 
   const showModal = () => {
     setIsModalVisible(true);
+    setLoading(false);
   };
 
   const handleOk = () => {
@@ -91,8 +113,9 @@ const TaskList = ({ onSubmit,tasks, currentUser }) => {
   const onFinish = (values) => {
     const item = {...values,key:values.name,deadline:moment(values.deadline).format('YYYY-MM-DD')};
     setData([item, ...data]);
-    onSubmit(item);
-    handleCancel(false);
+    setLoading(true);
+    onAddTask(item);
+   // handleCancel(false);
   };
 
   const onFinishFailed = () => {
@@ -101,7 +124,7 @@ const TaskList = ({ onSubmit,tasks, currentUser }) => {
   return (
     <>
       <div>
-        <Button onClick={showModal} type="primary" style={{ marginBottom: 16 }}>
+        <Button onClick={showModal} type="primary" style={{ marginBottom: 16 }} >
           Add Task
         </Button>
         <Table columns={columns} pagination={false} dataSource={tasks} />
@@ -144,17 +167,17 @@ const TaskList = ({ onSubmit,tasks, currentUser }) => {
             rules={[{ required: true, message: 'Please input your Payment!' }]}
           >
             <InputNumber
-              addonAfter="N"
+              addonAfter="Ⓝ"
               defaultValue="1"
               min="1"
-              max="10000000000"
+              max="1000000"
               step="1"
               style={{ width: '100%' }}
             />
           </Form.Item>
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={loading}>
               Submit
             </Button>
           </Form.Item>

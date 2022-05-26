@@ -41,23 +41,43 @@ async function initContract() {
     nearConfig.contractName,
     {
       // View methods are read-only – they don't modify the state, but usually return some value
-      viewMethods: ['getMessageTasks'],
+      viewMethods: ['getTasks'],
       // Change methods can modify the state, but you don't receive the returned value when called
-      changeMethods: ['addTask'],
+      changeMethods: ['addTask','apply','ratingAndTransfer'],
       // Sender is the account ID to initialize transactions.
       // getAccountId() will return empty string if user is still unauthorized
       sender: walletConnection.getAccountId(),
     }
   );
 
-  return { contract, currentUser, nearConfig, walletConnection };
+  const contract2 = await new nearAPI.Contract(
+    // User's accountId as a string
+    walletConnection.account(),
+    // accountId of the contract we will be loading
+    // NOTE: All contracts on NEAR are deployed to an account and
+    // accounts can only have one contract deployed to them.
+    nearConfig.contractName2,
+    {
+      // View methods are read-only – they don't modify the state, but usually return some value
+      viewMethods: ['getUserRatingTokens'],
+      // Change methods can modify the state, but you don't receive the returned value when called
+      changeMethods: ['mint'],
+      // Sender is the account ID to initialize transactions.
+      // getAccountId() will return empty string if user is still unauthorized
+      sender: walletConnection.getAccountId(),
+    }
+  );
+  
+
+  return { contract,contract2, currentUser, nearConfig, walletConnection };
 }
 
 window.nearInitPromise = initContract().then(
-  ({ contract, currentUser, nearConfig, walletConnection }) => {
+  ({ contract,contract2, currentUser, nearConfig, walletConnection }) => {
     ReactDOM.render(
       <App
         contract={contract}
+        contract2={contract2}
         currentUser={currentUser}
         nearConfig={nearConfig}
         wallet={walletConnection}

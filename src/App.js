@@ -19,42 +19,115 @@ const BOATLOAD_OF_GAS = Big(3)
   .times(10 ** 13)
   .toFixed();
 
-const App = ({ contract, currentUser, nearConfig, wallet }) => {
+const App = ({ contract,contract2, currentUser, nearConfig, wallet }) => {
   const [tasks, setMessages] = useState([]);
   const [selectMenu, setSelectMenu] = useState('1');
+  const [applicants, setApplicants] = useState([]);
+  const [receiver,setReceiver] = useState('');
 
   useEffect(() => {
     // TODO: don't just fetch once; subscribe!
-    contract.getMessageTasks().then(setMessages);
+    contract.getTasks().then(setMessages);
   }, []);
 
-  const onSubmit = (values) => {
-    debugger
-//     deadline: "2022-05-23"
-// key: "aaa"
-// name: "aaa"
-// payment: 1
+  const onAddTask = (values) => {
     const { task, deadline, payment } = values;
-
- 
-    // TODO: optimistically update page with new message,
-    // update blockchain data in background
-    // add uuid to each message, so we know which one is already known
     contract
       .addTask(
-        { task:task,deadline:Date.parse(deadline).valueOf() },
+        { text: task, deadline: Date.parse(deadline).valueOf().toString() },
         BOATLOAD_OF_GAS,
         Big(payment || '0')
           .times(10 ** 24)
           .toFixed()
       )
       .then(() => {
-        contract.getMessageTasks().then((tasks) => {
+        contract.getTasks().then((tasks) => {
           setMessages(tasks);
-        
         });
       });
   };
+
+  const onApply = (index) => {
+    contract
+      .apply(
+        { index },
+        BOATLOAD_OF_GAS,
+        Big('0')
+          .times(10 ** 24)
+          .toFixed()
+      )
+      .then(() => {
+        contract.getTasks().then((tasks) => {
+          setMessages(tasks);
+        });
+      });
+  };
+
+  const onAccept = (receiver) => {
+   setReceiver(receiver);
+   setSelectMenu('3');
+  };
+
+  const onPay = (values) => {
+    const { rating, comment } = values;
+    // {"index":3,"receiver":"jacky110.testnet","rating":5,"comment":"good"}
+    contract
+      .ratingAndTransfer(
+        {"index":3,"receiver":receiver,"rating":rating,"comment":comment},
+        BOATLOAD_OF_GAS,
+        Big('0')
+          .times(10 ** 24)
+          .toFixed()
+      )
+      .then(() => {
+        setReceiver('');
+        setSelectMenu('1');
+        contract.getTasks().then((tasks) => {
+          setMessages(tasks);
+        });
+      });
+   };
+ 
+  
+
+
+
+  useEffect(() => {
+    contract.getTasks().then((tasks) => {
+      const applies = [];
+      
+      setMessages(tasks);
+      // const myTasks =  tasks.filter(item =>item.sender ==currentUser.accountId)
+      tasks.forEach(item => {
+        item.sender ==currentUser.accountId && item.applicants.forEach(item2 => {
+          if (!applies.includes(item2)) {
+            applies.push(item2)
+          }
+        })
+      })
+      
+
+     
+      const allPromis = applies.map(item=> contract2.getUserRatingTokens( { user:item }))
+      Promise.all(allPromis).then(res=>{
+        const average = arr=> arr.reduce((acc,v,i,a)=>(acc+v/a.length),0);
+        const applyComments = applies.map((item,index)=>{
+          return {
+            key:index,
+            name:item,
+            description:(
+                <p>
+                  AVG Rate : {average(res[index].map(subItem=>subItem.rating)) }<br/>
+                  {res[index].map((subItem ,subIndex)=> (<>Comment {subIndex+1}: {subItem.comment} <br /></>))}
+                </p>
+              )}
+        })
+        setApplicants(applyComments) ;
+       
+      })
+    });
+  }, []);
+
 
   const signIn = () => {
     wallet.requestSignIn(
@@ -78,7 +151,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
   const menuList = [
     { key: 1, label: `Home` },
     { key: 2, label: `Task` },
-    { key: 3, label: `Rate` },
+    // { key: 3, label: `Rate` },
   ];
 
   return (
@@ -91,7 +164,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     //     }
     //   </header>
     //   { currentUser
-    //     ? <Form onSubmit={onSubmit} currentUser={currentUser} />
+    //     ? <Form onAddTask={onAddTask} currentUser={currentUser} />
     //     : <SignIn/>
     //   }
     //   { !!currentUser && !!tasks.length && <Messages tasks={tasks}/> }
@@ -103,7 +176,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
         <div className="logo">智慧楼宇</div>
         <Menu
           theme="dark"
-          style={{ float: 'left' }}
+          style={{ float: 'left',minWidth:'260px' }}
           mode="horizontal"
           defaultSelectedKeys={['1']}
           onSelect={menuSelect}
@@ -124,9 +197,9 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
       </Header>
       <Content style={{ padding: '0 50px' }}>
         <div className="site-layout-content">
-          {selectMenu == '1' ? <TaskList tasks={tasks} onSubmit={onSubmit}></TaskList> : ''}
-          {selectMenu == '2' ? <ApplyList></ApplyList> : ''}
-          {selectMenu == '3' ? <Rating></Rating> : ''}
+          {selectMenu == '1' ? <TaskList tasks={tasks} onApply={onApply} onAddTask={onAddTask}></TaskList> : ''}
+          {selectMenu == '2' ? <ApplyList applicants={applicants} onAccept={onAccept} ></ApplyList> : ''}
+          {receiver ? <Rating receiver={receiver} onPay={onPay}></Rating> : ''}
         </div>
       </Content>
       <Footer style={{ textAlign: 'center' }}> ©2022 </Footer>
@@ -137,7 +210,11 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
 App.propTypes = {
   contract: PropTypes.shape({
     addTask: PropTypes.func.isRequired,
-    getMessageTasks: PropTypes.func.isRequired,
+    getTasks: PropTypes.func.isRequired,
+    ratingAndTransfer: PropTypes.func.isRequired,
+  }).isRequired,
+  contract2: PropTypes.shape({
+    getUserRatingTokens: PropTypes.func.isRequired,
   }).isRequired,
   currentUser: PropTypes.shape({
     accountId: PropTypes.string.isRequired,

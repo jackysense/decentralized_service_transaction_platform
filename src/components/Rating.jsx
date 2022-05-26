@@ -30,32 +30,32 @@ const { TextArea } = Input;
 //   tasks: PropTypes.array
 // };
 
-const Rating = () => {
+const Rating = ({receiver,onPay}) => {
 
   const [data, setData] = useState([]);
 
 
   useEffect(() => {
-    setData([
-      {
-        key: '1',
-        name: '翻译文章',
-        deadline: '2022-05-21',
-        payment: 100011,
-      },
-      {
-        key: '2',
-        name: '室内清洁',
-        deadline: '2022-05-21',
-        payment: 10001,
-      },
-      {
-        key: '3',
-        name: 'Joe Black',
-        deadline: '2022-05-21',
-        payment: 1000,
-      },
-    ]);
+    // setData([
+    //   {
+    //     key: '1',
+    //     name: '翻译文章',
+    //     deadline: '2022-05-21',
+    //     payment: 100011,
+    //   },
+    //   {
+    //     key: '2',
+    //     name: '室内清洁',
+    //     deadline: '2022-05-21',
+    //     payment: 10001,
+    //   },
+    //   {
+    //     key: '3',
+    //     name: 'Joe Black',
+    //     deadline: '2022-05-21',
+    //     payment: 1000,
+    //   },
+    // ]);
   }, []);
 
 
@@ -94,7 +94,7 @@ const Rating = () => {
             name="comment"
             rules={[{ required: true, message: 'Please input your Deadline!' }]}
           >
-              <TextArea rows={4} placeholder="Please input your Comment" maxLength={6} />
+              <TextArea rows={4} placeholder="Please input your Comment" maxLength={50} />
           </Form.Item>
        
 

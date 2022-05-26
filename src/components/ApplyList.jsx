@@ -9,11 +9,11 @@ const defaultExpandable = {
   expandedRowRender: (record) => <>{record.description}</>,
 };
 
-const ApplyList = () => {
+const ApplyList = ({applicants,onAccept}) => {
 
   const [data, setData] = useState([]);
   const [expandable, setExpandable] = useState(defaultExpandable);
-  const [expandKeys, setExpandKeys] = useState([]);
+  // const [expandKeys, setExpandKeys] = useState([]);
   const columns = [
     {
       title: 'Account ID',
@@ -26,38 +26,38 @@ const ApplyList = () => {
     {
       title: 'Action',
       key: 'action',
-      render: (text, record) => (
+      render: (text, record,index) => (
         <Space size="middle">
-          <Button>Accept</Button>
+          <Button onClick={()=>onAccept(record.name)}>Accept</Button>
         </Space>
       ),
     },
   ];
   useEffect(() => {
-    setExpandKeys([1,2]);
-    setData([
-      {
-        key:1,
-        name: 'test.near',
-        description: (
-          <p>
-            {['good', 'not bad'].map((item ,index)=> (<>Comment {index+1}: {item} <br /></>))}
-          </p>
-        ),
-      },
-      {
-        key:2,
-        name: 'test1.near',
-        description: (
-          <p>
-          {['good', 'well done'].map((item ,index)=> (<>Comment {index+1}: {item} <br /></>))}
-          </p>
-        ),
-      },
-    ]);
+    // setExpandKeys([1,2]);
+    // setData([
+    //   {
+    //     key:1,
+    //     name: 'test.near',
+    //     description: (
+    //       <p>
+    //         {['good', 'not bad'].map((item ,index)=> (<>Comment {index+1}: {item} <br /></>))}
+    //       </p>
+    //     ),
+    //   },
+    //   {
+    //     key:2,
+    //     name: 'test1.near',
+    //     description: (
+    //       <p>
+    //       {['good', 'well done'].map((item ,index)=> (<>Comment {index+1}: {item} <br /></>))}
+    //       </p>
+    //     ),
+    //   },
+    // ]);
   }, []);
 
-
+  const expandKeys=applicants.map(item=>item.key);
 
   return (
     <>
@@ -67,7 +67,7 @@ const ApplyList = () => {
         expandedRowKeys={expandKeys}
         pagination={false}
         columns={columns}
-        dataSource={data}
+        dataSource={applicants}
       // scroll={scroll}
       />
     </>

@@ -11,7 +11,7 @@ const contract = {
     accountId: 'test.near'
   },
   contractId: 'test.near',
-  getMessageTasks: () => new Promise(() => {}),
+  getTasks: () => new Promise(() => {}),
   addTask: () => ''
 };
 const walletConnection = {

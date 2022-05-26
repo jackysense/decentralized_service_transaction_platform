@@ -10,7 +10,7 @@ const MESSAGE_LIMIT = 10;
  * NOTE: This is a change method. Which means it will modify the state.\
  * But right now we don't distinguish them with annotations yet.
  */
-export function addTask(task:string,deadline:Date): void {
+export function addTask(task:string,deadline:number): void {
   // Creating a new message and populating fields with our data
   const message = new TaskMessage(task,deadline);
   // Adding the message to end of the persistent collection

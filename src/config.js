@@ -1,4 +1,5 @@
-const CONTRACT_NAME = process.env.CONTRACT_NAME || 'jacky2021.testnet';
+const CONTRACT_NAME = process.env.CONTRACT_NAME || 'task01.testnet';
+const CONTRACT_NAME2 = process.env.CONTRACT_NAME2 || 'rating.testnet';
 
 function getConfig(env) {
   switch(env) {
@@ -19,6 +20,7 @@ function getConfig(env) {
         networkId: 'testnet',
         nodeUrl: 'https://public-rpc.blockpi.io/http/near-testnet',
         contractName: CONTRACT_NAME,
+        contractName2:  CONTRACT_NAME2,
         walletUrl: 'https://wallet.testnet.near.org',
         helperUrl: 'https://helper.testnet.near.org'
       };

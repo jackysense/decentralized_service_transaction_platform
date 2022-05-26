@@ -2,11 +2,11 @@ import { addTask, getMessageTasks } from '../main';
 import { TaskMessage, tasks } from '../model';
 import { VMContext, Context, u128 } from 'near-sdk-as';
 
-function createMessage(task: string,deadline: Date): TaskMessage {
+function createMessage(task: string,deadline: number): TaskMessage {
   return new TaskMessage(task,deadline);
 }
 
-const message = createMessage('hello world',new Date(1653306156881));
+const message = createMessage('hello world',1653306156881);
 
 describe('message tests', () => {
   afterEach(() => {
@@ -16,7 +16,7 @@ describe('message tests', () => {
   });
 
   it('adds a message', () => {
-    addTask('hello world',new Date(1653306156881));
+    addTask('hello world',1653306156881);
     expect(tasks.length).toBe(
       1,
       'should only contain one message'
@@ -29,7 +29,7 @@ describe('message tests', () => {
 
   it('adds a payment message', () => {
     VMContext.setAttached_deposit(u128.from('10000000000000000000000'));
-    addTask('hello world',new Date(1653306156881));
+    addTask('hello world',1653306156881);
     const messageAR = getMessageTasks();
     expect(messageAR[0].payment).toStrictEqual(true,
       'should be premium'
@@ -37,7 +37,7 @@ describe('message tests', () => {
   });
 
   it('retrieves tasks', () => {
-    addTask('hello world',new Date(1653306156881));
+    addTask('hello world',1653306156881);
     const messagesArr = getMessageTasks();
     expect(messagesArr.length).toBe(
       1,
@@ -50,12 +50,12 @@ describe('message tests', () => {
   });
 
   it('only show the last 10 tasks', () => {
-    addTask('hello world',new Date(1653306156881));
+    addTask('hello world',1653306156881);
     const newMessages: TaskMessage[] = [];
     for(let i: i32 = 0; i < 10; i++) {
       const text = 'message #' + i.toString();
-      newMessages.push(createMessage(text,new Date(1653306156881)));
-      addTask(text,new Date(1653306156881));
+      newMessages.push(createMessage(text,1653306156881));
+      addTask(text,1653306156881);
     }
     const tasks = getMessageTasks();
     log(tasks.slice(7, 10));
@@ -79,7 +79,7 @@ describe('attached deposit tests', () => {
   it('attaches a deposit to a contract call', () => {
     log('Initial account balance: ' + Context.accountBalance.toString());
 
-    addTask('hello world',new Date(1653306156881));
+    addTask('hello world',1653306156881);
     VMContext.setAttached_deposit(u128.from('10'));
 
     log('Attached deposit: 10');
