@@ -75,6 +75,12 @@ Step 2: set contract name in code
 Modify the line in `src/config.js` that sets the account name of the contract. Set it to the account id you used above.
 
     const CONTRACT_NAME = process.env.CONTRACT_NAME || 'your-account-here!'
+    const CONTRACT_NAME2 = process.env.CONTRACT_NAME2 || 'your-account2-here!'
+
+    change ~/contracts/task/assembly/index.ts [TOKEN_CONTRACT_ACCOUNT] to your rating contract account
+    
+    code : const TOKEN_CONTRACT_ACCOUNT = 'rating.testnet';
+
 
 
 Step 3: change remote URL if you cloned this repo 
@@ -91,15 +97,32 @@ Unless you forked this repository you will need to change the remote URL to a re
 Step 4: deploy!
 ---------------
 
-One command:
+Two command:
 
-    yarn deploy
+    near deploy --accountId rating.testnet --wasmFile build/debug/rating.wasm
+
+    near deploy --accountId task01.testnet --wasmFile build/debug/task.wasm
+
 
 As you can see in `package.json`, this does two things:
 
 1. builds & deploys smart contracts to NEAR TestNet
 2. builds & deploys frontend code to GitHub using [gh-pages]. This will only work if the project already has a repository set up on GitHub. Feel free to modify the `deploy` script in `package.json` to deploy elsewhere.
 
+
+Test:
+
+near call task01.testnet addTask '{"text":"test","deadline":"1653633381505"}' --accountId test1.testnet
+
+near call task01.testnet getTasks --accountId test1.testnet
+
+
+near call task01.testnet apply '{"index":0}' --accountId test2.testnet
+
+near call task01.testnet ratingAndTransfer '{"index":3,"receiver":"test2.testnet","rating":5,"comment":"good"}' --accountId test1.testnet 
+
+
+near call rating.testnet  getUserRatingTokens '{"user":"test1.testnet"}' --accountId test2.testnet 
 
 
   [NEAR]: https://near.org/
@@ -116,3 +139,4 @@ As you can see in `package.json`, this does two things:
   [create-near-app]: https://github.com/near/create-near-app
   [gh-pages]: https://github.com/tschaub/gh-pages
 
+ 

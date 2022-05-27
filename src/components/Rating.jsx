@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Button,
   Form,
@@ -10,13 +10,12 @@ const { TextArea } = Input;
 
 
 const Rating = (props) => {
-  const  {receiver,onPay,form} =props;
+  const  {onPay,form} =props;
   const { getFieldDecorator } = form;
 
   const [loading, setLoading] = useState(false);
 
   const onFinish = (e) => {
-    debugger
     e.preventDefault();
     props.form.validateFields((err, values) => {
       if(err) return;
