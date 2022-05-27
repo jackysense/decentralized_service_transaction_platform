@@ -2,9 +2,6 @@ import 'regenerator-runtime/runtime';
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Big from 'big.js';
-import Form from './components/Form';
-import SignIn from './components/SignIn';
-import Messages from './components/Messages';
 import TaskList from './components/TaskList';
 import Rating from './components/Rating';
 
@@ -14,25 +11,32 @@ import { Button, Layout, Menu } from 'antd';
 
 const { Header, Content, Footer } = Layout;
 
-const SUGGESTED_DONATION = '0';
 const BOATLOAD_OF_GAS = Big(3)
   .times(10 ** 13)
   .toFixed();
 
-const App = ({ contract,contract2, currentUser, nearConfig, wallet }) => {
+const App = ({ contract, contract2, currentUser, nearConfig, wallet }) => {
   const [tasks, setMessages] = useState([]);
   const [selectMenu, setSelectMenu] = useState('1');
   const [applicants, setApplicants] = useState([]);
-  const [receiver,setReceiver] = useState('');
-  const [currentIndex,setCurrentIndex] = useState(0);
+  const [receiver, setReceiver] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  useEffect(() => {
-    // TODO: don't just fetch once; subscribe!
-    contract.getTasks().then(setMessages);
-  }, []);
+  const signIn = () => {
+    wallet.requestSignIn(
+      { contractId: nearConfig.contractName, methodNames: [contract.addTask.name] }, //contract requesting access
+      'NEAR Decentralized Service Transaction Platform', //optional name
+      null, //optional URL to redirect to if the sign in was successful
+      null //optional URL to redirect to if the sign in was NOT successful
+    );
+  };
 
   const onAddTask = (values) => {
     const { task, deadline, payment } = values;
+    if (!currentUser) {
+      signIn();
+      return;
+    }
     contract
       .addTask(
         { text: task, deadline: Date.parse(deadline).valueOf().toString() },
@@ -49,6 +53,10 @@ const App = ({ contract,contract2, currentUser, nearConfig, wallet }) => {
   };
 
   const onApply = (index) => {
+    if (!currentUser) {
+      signIn();
+      return;
+    }
     contract
       .apply(
         { index },
@@ -64,17 +72,21 @@ const App = ({ contract,contract2, currentUser, nearConfig, wallet }) => {
       });
   };
 
-  const onAccept = (receiver,index) => {
-   setReceiver(receiver);
-   setCurrentIndex(index);
-   setSelectMenu('3');
+  const onAccept = (receiver, index) => {
+    if (!currentUser) {
+      signIn();
+      return;
+    }
+    setReceiver(receiver);
+    setCurrentIndex(index);
+    setSelectMenu('3');
   };
 
   const onPay = (values) => {
     const { rating, comment } = values;
     contract
       .ratingAndTransfer(
-        {"index":currentIndex,"receiver":receiver,"rating":rating,"comment":comment},
+        { index: currentIndex, receiver: receiver, rating: rating, comment: comment },
         BOATLOAD_OF_GAS,
         Big('0')
           .times(10 ** 24)
@@ -87,67 +99,58 @@ const App = ({ contract,contract2, currentUser, nearConfig, wallet }) => {
           setMessages(tasks);
         });
       });
-   };
- 
-  
-
-
+  };
 
   useEffect(() => {
     contract.getTasks().then((tasks) => {
       const applies = [];
-      
-      setMessages(tasks);
-       const myTasks = [];
-      tasks.forEach((item,index) => {      
-        if(item.sender == currentUser.accountId && !item.finalApplicant){
-          item.applicants.forEach(item2 => {
-              if (!applies.includes(item2)) {
-                applies.push(item2)
-              }
-            })
-            myTasks.push({...item,index});
-        }
-      })     
 
-     
-      const allPromis = applies.map(item=> contract2.getUserRatingTokens( { user:item }))
-      Promise.all(allPromis).then(res=>{
-        const average = arr=> arr.reduce((acc,v,i,a)=>(acc+v/a.length),0);
-        const applyComments = applies.map((item,index)=>{
+      setMessages(tasks);
+      const myTasks = [];
+      tasks.forEach((item, index) => {
+        if (currentUser && item.sender == currentUser.accountId && !item.finalApplicant) {
+          item.applicants.forEach((item2) => {
+            if (!applies.includes(item2)) {
+              applies.push(item2);
+            }
+          });
+          myTasks.push({ ...item, index });
+        }
+      });
+
+      const allPromis = applies.map((item) => contract2.getUserRatingTokens({ user: item }));
+      Promise.all(allPromis).then((res) => {
+        const average = (arr) => arr.reduce((acc, v, i, a) => acc + v / a.length, 0);
+        const applyComments = applies.map((item, index) => {
           return {
-            key:index,
-            name:item,
-            description:(
-                <p>
-                  AVG Rate : {average(res[index].map(subItem=>subItem.rating)) ||'NA'}<br/>
-                  {res[index].map((subItem ,subIndex)=> (<>Comment {subIndex+1}: {subItem.comment} <br /></>))}
-                </p>
-              )}
-        })
-        
-        const allDisplayComments=[]
-        myTasks.forEach(item=>{
-          item.applicants.forEach(subItem=>{
-            const filter = applyComments.filter(item=>item.name===subItem);
-            filter.length && allDisplayComments.push({...filter[0],task:item.task,index:item.index})
-          })
-        })
-        setApplicants(allDisplayComments) ;
-       
-      })
+            key: index,
+            name: item,
+            description: (
+              <p>
+                AVG Rate : {average(res[index].map((subItem) => subItem.rating)) || 'NA'}
+                <br />
+                {res[index].map((subItem, subIndex) => (
+                  <>
+                    Comment {subIndex + 1}: {subItem.comment} <br />
+                  </>
+                ))}
+              </p>
+            ),
+          };
+        });
+
+        const allDisplayComments = [];
+        myTasks.forEach((item) => {
+          item.applicants.forEach((subItem) => {
+            const filter = applyComments.filter((item) => item.name === subItem);
+            filter.length &&
+              allDisplayComments.push({ ...filter[0], task: item.task, index: item.index });
+          });
+        });
+        setApplicants(allDisplayComments);
+      });
     });
   }, []);
-
-
-  const signIn = () => {
-    wallet.requestSignIn(
-      { contractId: nearConfig.contractName, methodNames: [contract.addTask.name] }, //contract requesting access
-      'NEAR Decentralized Service Transaction Platform', //optional name
-      null, //optional URL to redirect to if the sign in was successful
-      null //optional URL to redirect to if the sign in was NOT successful
-    );
-  };
 
   const signOut = () => {
     wallet.signOut();
@@ -166,18 +169,29 @@ const App = ({ contract,contract2, currentUser, nearConfig, wallet }) => {
   ];
 
   return (
-  
     <Layout className="layout">
       <Header>
         <div className="logo">Deservice Trade</div>
-        <Menu
+        {/* <Menu
           theme="dark"
           style={{ float: 'left',minWidth:'260px' }}
           mode="horizontal"
           defaultSelectedKeys={['1']}
           onSelect={menuSelect}
           items={menuList}
-        />
+        /> */}
+
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          defaultSelectedKeys={['1']}
+          style={{ lineHeight: '64px',float: 'left',minWidth:'260px' }}
+          onSelect={menuSelect}
+        >
+          <Menu.Item key="1">Home</Menu.Item>
+          <Menu.Item key="2">My Task</Menu.Item>
+          {/* <Menu.Item key="3">nav 3</Menu.Item> */}
+        </Menu>
         <div className="right">
           {currentUser ? (
             <>
@@ -193,8 +207,22 @@ const App = ({ contract,contract2, currentUser, nearConfig, wallet }) => {
       </Header>
       <Content style={{ padding: '0 50px' }}>
         <div className="site-layout-content">
-          {selectMenu == '1' ? <TaskList tasks={tasks} onApply={onApply} onAddTask={onAddTask}></TaskList> : ''}
-          {selectMenu == '2' ? <ApplyList applicants={applicants} onAccept={onAccept} ></ApplyList> : ''}
+          {selectMenu == '1' ? (
+            <TaskList
+              tasks={tasks}
+              currentUser={currentUser}
+              onApply={onApply}
+              signIn={signIn}
+              onAddTask={onAddTask}
+            ></TaskList>
+          ) : (
+            ''
+          )}
+          {selectMenu == '2' ? (
+            <ApplyList applicants={applicants} onAccept={onAccept}></ApplyList>
+          ) : (
+            ''
+          )}
           {receiver ? <Rating receiver={receiver} onPay={onPay}></Rating> : ''}
         </div>
       </Content>

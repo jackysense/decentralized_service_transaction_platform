@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types';
 
-import React, { useState, useEffect } from 'react';
-import { Table, Tag, Modal, Button, Space, Avatar, Input, message, List, Comment } from 'antd';
-import moment from 'moment';
-const { TextArea } = Input;
+import React, { useState } from 'react';
+import { Table,  Button } from 'antd';
 
 const defaultExpandable = {
   expandedRowRender: (record) => <>{record.description}</>,
@@ -11,9 +9,7 @@ const defaultExpandable = {
 
 const ApplyList = ({applicants,onAccept}) => {
 
-  const [data, setData] = useState([]);
   const [expandable, setExpandable] = useState(defaultExpandable);
-  // const [expandKeys, setExpandKeys] = useState([]);
   const columns = [
     {
       title: 'Account ID',
@@ -31,17 +27,12 @@ const ApplyList = ({applicants,onAccept}) => {
     {
       title: 'Action',
       key: 'action',
-      render: (text, record,index) => (
-        // <Space size="middle">
+      render: (text, record) => (
           <Button onClick={()=>onAccept(record.name,record.index)}>Accept</Button>
-        // </Space>
       ),
     },
   ];
-  useEffect(() => {
-    
-  }, []);
-
+  
   const expandKeys=applicants.map(item=>item.key);
 
   return (
@@ -53,7 +44,6 @@ const ApplyList = ({applicants,onAccept}) => {
         pagination={false}
         columns={columns}
         dataSource={applicants}
-      // scroll={scroll}
       />
     </>
   );

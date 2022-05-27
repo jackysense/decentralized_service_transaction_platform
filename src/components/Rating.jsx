@@ -9,52 +9,58 @@ import {
 const { TextArea } = Input;
 
 
-const Rating = ({receiver,onPay}) => {
+const Rating = (props) => {
+  const  {receiver,onPay,form} =props;
+  const { getFieldDecorator } = form;
 
-  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-
-  useEffect(() => {
-    
-  }, []);
-
-
-
-  const onFinishFailed = () => {
-    console.log('onFinishFailed:');
+  const onFinish = (e) => {
+    debugger
+    e.preventDefault();
+    props.form.validateFields((err, values) => {
+      if(err) return;
+      if (!err) {      
+        setLoading(true);
+        onPay(values);
+      }
+    });
   };
 
   return (
-    <>
-     
+    <>     
         <Form
           name="basic"
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           initialValues={{ remember: true }}
-          onFinish={onPay}
-          onFinishFailed={onFinishFailed}
+          onSubmit={onFinish}
           autoComplete="off"
         >
           <Form.Item
             label="Rate"
-            name="rating"
+            name="rating"            
             rules={[{ required: true, message: 'Please give your Rate!' }]}
           >
-           <Rate   />
+          
+           {getFieldDecorator('rating', {
+              rules: [{ required: true, message: 'Please give your Rate!' }],
+            })( <Rate   />)}
           </Form.Item>
 
           <Form.Item
             label="Comment"
             name="comment"
-            rules={[{ required: true, message: 'Please input your Deadline!' }]}
           >
-              <TextArea rows={4} placeholder="Please input your Comment" maxLength={50} />
+             {getFieldDecorator('comment', {
+              rules: [{ required: true, message: 'Please input your Comment' }],
+            })(<TextArea rows={4} placeholder="Please input your Comment" maxLength={50} />)}
+              
           </Form.Item>
        
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={loading}>
               Rate and Pay
             </Button>
           </Form.Item>
@@ -63,4 +69,4 @@ const Rating = ({receiver,onPay}) => {
   );
 };
 
-export default Rating;
+export default Form.create()(Rating); 
