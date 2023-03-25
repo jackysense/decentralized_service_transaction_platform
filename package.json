@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "license": "(MIT AND Apache-2.0)",
   "scripts": {
-    "build": "yarn build:contract && yarn build:web",
+    "build": "yarn build:contract && yarn build:web && cp vercel.json ./dist",
     "build:contract": "asb",
     "build:contract:debug": "asb --target debug",
     "build:web": "parcel build src/index.html --public-url ./",
