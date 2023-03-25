@@ -19,3 +19,4 @@ neardev/dev-account*
 
 # misc
 yarn-error.log
+/build/debug/*.wasm

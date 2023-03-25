@@ -185,7 +185,7 @@ const App = ({ contract, contract2, currentUser, nearConfig, wallet }) => {
           theme="dark"
           mode="horizontal"
           defaultSelectedKeys={['1']}
-          style={{ lineHeight: '64px',float: 'left',minWidth:'260px' }}
+          style={{ lineHeight: '64px', float: 'left', minWidth: '260px' }}
           onSelect={menuSelect}
         >
           <Menu.Item key="1">Home</Menu.Item>
@@ -226,6 +226,9 @@ const App = ({ contract, contract2, currentUser, nearConfig, wallet }) => {
           {receiver ? <Rating receiver={receiver} onPay={onPay}></Rating> : ''}
         </div>
       </Content>
+      <div>
+        <iframe width="390" height="400px" src="https://goerli.portal.zksync.io/" />
+      </div>
       <Footer style={{ textAlign: 'center' }}> ©2022 </Footer>
     </Layout>
   );
